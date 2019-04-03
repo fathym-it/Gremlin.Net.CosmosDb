@@ -12,6 +12,11 @@ namespace Gremlin.Net.CosmosDb
 	{
 		private readonly Process.Traversal.GraphTraversalSource _graphTraversalSource;
 
+		public virtual Process.Traversal.GraphTraversalSource G()
+		{
+			return _graphTraversalSource;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GraphTraversalSource"/> class.
 		/// </summary>
