@@ -2,6 +2,7 @@
 using Gremlin.Net.Driver;
 using Gremlin.Net.Driver.Remote;
 using Gremlin.Net.Process.Traversal;
+using Moq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Globalization;
@@ -30,14 +31,11 @@ namespace Gremlin.Net.CosmosDb.Serialization
 		};
 
 		[Fact]
-		private void GremlinQuerySerializer()
+		private void gVFix()
 		{
-			//	TODO: Need to mock
-			var server = new GremlinServer();
+			var client = new Mock<IGremlinClient>();
 
-			var client = new GremlinClient(server);
-
-			var g = AnonymousTraversalSource.Traversal().WithRemote(new DriverRemoteConnection(client));
+			var g = AnonymousTraversalSource.Traversal().WithRemote(new DriverRemoteConnection(client.Object));
 
 			var entQuery = g.V().HasLabel("Enterprise")
 				.Has("Registry", "xxx")
@@ -50,6 +48,21 @@ namespace Gremlin.Net.CosmosDb.Serialization
 			var query = g.V(entQuery).AddE("Owns").To(appQuery).ToGremlinQuery();
 
 			query.Should().Be("g.V(g.V().hasLabel(\"Enterprise\").has(\"Registry\",\"xxx\").has(\"PrimaryAPIKey\",\"XXX\")).addE(\"Owns\").to(g.V([\"aaa\", \"AAA\"]).hasLabel(\"Application\").has(\"Registry\",\"xxx2\"))");
+		}
+
+		[Fact]
+		private void gV__Fix()
+		{
+			var client = new Mock<IGremlinClient>();
+
+			var g = AnonymousTraversalSource.Traversal().WithRemote(new DriverRemoteConnection(client.Object));
+
+			var entQuery = g.V()
+				.BothE().Where(__.InV().HasId("1234"));
+
+			var query = entQuery.ToGremlinQuery();
+
+			query.Should().Be("g.V().bothE().where(__.inV().hasId(\"1234\"))");
 		}
 	}
 }
