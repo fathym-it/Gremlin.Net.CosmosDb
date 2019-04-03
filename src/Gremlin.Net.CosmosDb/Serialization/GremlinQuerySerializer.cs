@@ -31,7 +31,7 @@ namespace Gremlin.Net.CosmosDb.Serialization
         };
 
         private static readonly string[] INSTRUCTIONS_REQUIRING_DOUBLE_UNDERSCORES_FOR_ANONYMOUS
-            = new[] { "in", "not", "V" };
+            = new[] { "in", "not", "V", "inV", "outV", "out" };
 
         private readonly JsonSerializerSettings _serializerSettings;
         private readonly TextWriter _writer;
@@ -117,8 +117,8 @@ namespace Gremlin.Net.CosmosDb.Serialization
                 {
                     _writer.Write('.');
                 }
-                else if (startAnonTraversal
-                    && INSTRUCTIONS_REQUIRING_DOUBLE_UNDERSCORES_FOR_ANONYMOUS.Contains(instr.OperatorName))
+                else if (startAnonTraversal)
+                    //&& INSTRUCTIONS_REQUIRING_DOUBLE_UNDERSCORES_FOR_ANONYMOUS.Contains(instr.OperatorName))
                 {
                     _writer.Write("__.");
                 }

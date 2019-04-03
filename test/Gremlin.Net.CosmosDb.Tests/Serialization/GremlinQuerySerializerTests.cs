@@ -12,30 +12,12 @@ namespace Gremlin.Net.CosmosDb.Serialization
 {
 	public class GremlinQuerySerializerTests
 	{
-		private static readonly JsonSerializerSettings settings = new JsonSerializerSettings
-		{
-			Converters = new JsonConverter[]
-				{
-					new TreeJsonConverter(),
-					new IEdgeJsonConverter(),
-					new ElementJsonConverter(),
-					new IVertexJsonConverter(),
-					new IsoDateTimeConverter
-					{
-						DateTimeStyles = DateTimeStyles.AdjustToUniversal
-					}
-				},
-			DateFormatHandling = DateFormatHandling.IsoDateFormat,
-			DateParseHandling = DateParseHandling.DateTimeOffset,
-			DateTimeZoneHandling = DateTimeZoneHandling.Utc
-		};
-
 		[Fact]
 		private void gVFix()
 		{
 			var client = new Mock<IGremlinClient>();
 
-			var g = AnonymousTraversalSource.Traversal().WithRemote(new DriverRemoteConnection(client.Object));
+			var g = new GraphTraversalSource(new DriverRemoteConnection(client.Object));
 
 			var entQuery = g.V().HasLabel("Enterprise")
 				.Has("Registry", "xxx")
@@ -55,7 +37,7 @@ namespace Gremlin.Net.CosmosDb.Serialization
 		{
 			var client = new Mock<IGremlinClient>();
 
-			var g = AnonymousTraversalSource.Traversal().WithRemote(new DriverRemoteConnection(client.Object));
+			var g = new GraphTraversalSource(new DriverRemoteConnection(client.Object));
 
 			var entQuery = g.V()
 				.BothE().Where(__.InV().HasId("1234"));

@@ -361,7 +361,7 @@ namespace Gremlin.Net.CosmosDb.Serialization
             var list = new List<object> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             var traversal = g.V().And(__.Has("prop1"), __.Not(__.Has("prop2")));
             var actualGremlinQuery = traversal.ToGremlinQuery();
-            var expectedGremlinQuery = $@"g.V().and(has(""prop1""),__.not(has(""prop2"")))";
+            var expectedGremlinQuery = $@"g.V().and(__.has(""prop1""),__.not(__.has(""prop2"")))";
             Assert.Equal(expectedGremlinQuery, actualGremlinQuery);
         }
 
@@ -371,7 +371,7 @@ namespace Gremlin.Net.CosmosDb.Serialization
             var list = new List<object> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
             var traversal = g.V().Where(P.Neq(__.Not(__.Has("prop2")))); // contrived example
             var actualGremlinQuery = traversal.ToGremlinQuery();
-            var expectedGremlinQuery = $@"g.V().where(neq(__.not(has(""prop2""))))";
+            var expectedGremlinQuery = $@"g.V().where(neq(__.not(__.has(""prop2""))))";
             Assert.Equal(expectedGremlinQuery, actualGremlinQuery);
         }
 
@@ -383,17 +383,27 @@ namespace Gremlin.Net.CosmosDb.Serialization
             var actualGremlinQuery = traversal.ToGremlinQuery();
             var expectedGremlinQuery = $@"g.V(""someId"").optional(__.in(""edgeLabel"").in(""edgeLabel2""))";
             Assert.Equal(expectedGremlinQuery, actualGremlinQuery);
-        }
+		}
 
-        [Fact]
-        public void SerializeAnonymousInAsPredicateArgument()
-        {
-            var list = new List<object> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
-            var traversal = g.V("someId").Where(P.Eq(__.In("edgeLabel").In("edgeLabel2"))); // contrived example
-            var actualGremlinQuery = traversal.ToGremlinQuery();
-            var expectedGremlinQuery = $@"g.V(""someId"").where(eq(__.in(""edgeLabel"").in(""edgeLabel2"")))";
-            Assert.Equal(expectedGremlinQuery, actualGremlinQuery);
-        }
-        #endregion anonymous traversals
-    }
+		[Fact]
+		public void SerializeAnonymousInAsPredicateArgument()
+		{
+			var list = new List<object> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+			var traversal = g.V("someId").Where(P.Eq(__.In("edgeLabel").In("edgeLabel2"))); // contrived example
+			var actualGremlinQuery = traversal.ToGremlinQuery();
+			var expectedGremlinQuery = $@"g.V(""someId"").where(eq(__.in(""edgeLabel"").in(""edgeLabel2"")))";
+			Assert.Equal(expectedGremlinQuery, actualGremlinQuery);
+		}
+
+		[Fact]
+		public void SerializeAnonymousInAsPredicate2Argument()
+		{
+			var list = new List<object> { Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid() };
+			var traversal = g.V("someId").BothE().Where(__.InV().HasLabel("edgeLabel2")); // contrived example
+			var actualGremlinQuery = traversal.ToGremlinQuery();
+			var expectedGremlinQuery = $@"g.V(""someId"").bothE().where(__.inV().hasLabel(""edgeLabel2""))";
+			Assert.Equal(expectedGremlinQuery, actualGremlinQuery);
+		}
+		#endregion anonymous traversals
+	}
 }
