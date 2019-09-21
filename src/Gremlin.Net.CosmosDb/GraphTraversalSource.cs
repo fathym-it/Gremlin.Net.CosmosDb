@@ -16,6 +16,15 @@ namespace Gremlin.Net.CosmosDb
 		{
 			return _graphTraversalSource;
 		}
+		
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GraphTraversalSource"/> class.
+        /// </summary>
+        public GraphTraversalSource()
+        {
+            _graphTraversalSource = AnonymousTraversalSource.Traversal();
+            _graphTraversalSource.Bytecode.AddSource("g");
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GraphTraversalSource"/> class.

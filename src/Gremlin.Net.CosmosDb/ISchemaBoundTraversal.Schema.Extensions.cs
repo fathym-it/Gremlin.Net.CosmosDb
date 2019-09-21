@@ -240,7 +240,7 @@ namespace Gremlin.Net.CosmosDb
             where TVertex : IVertex
             where TEdge : IHasOutV<TVertex>
         {
-            var labelName = GetLabelName(typeof(TEdge), edgeSelector);
+            var labelName = GetLabelName(typeof(TVertex), edgeSelector);
 
             return traversal.AsGraphTraversal().OutE(labelName).AsSchemaBound<S, TEdge>();
         }
@@ -431,6 +431,12 @@ namespace Gremlin.Net.CosmosDb
 
             if (elementType != propInfo.ReflectedType && !elementType.IsSubclassOf(propInfo.ReflectedType))
                 throw new ArgumentException($"Expression '{lambda}' refers to a property that is not from type {elementType}.");
+
+            if (propInfo.GetCustomAttribute<Newtonsoft.Json.JsonPropertyAttribute>() is var jsonProperty)
+            {
+              if (!String.IsNullOrWhiteSpace(jsonProperty.PropertyName))
+                return jsonProperty.PropertyName;
+            }
 
             return propInfo.Name;
         }
